@@ -10,8 +10,9 @@ const databaseProviders = [
         database: process.env.DATABASE_NAME,
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
-        synchronize: process.env.NODE_ENV === 'Development' ? true : false,
+        synchronize: true, //process.env.NODE_ENV === 'Development' ? true : false,
         entities: [__dirname + '/entities/*.entity{.ts,.js}'],
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
       });
       return dataSource.initialize();
     },
