@@ -12,8 +12,11 @@ import {
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { UserDto } from './dtos/user.dto';
+import { Serialize } from 'src/core/interceptors/serialize.interceptor';
 
 @Controller('auth')
+@Serialize(UserDto) // can use on top of the controller as all API returns User data only
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
   @Post('/signup')
@@ -21,6 +24,7 @@ export class UsersController {
     return this.userService.create(body);
   }
 
+  // @UseInterceptors(new SerializeInterceptor(UserDto))
   @Get('/:id')
   async findUser(@Param('id') id: string) {
     const user = await this.userService.findOne(+id);
