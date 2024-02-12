@@ -6,23 +6,22 @@ import {
   NotFoundException,
   Param,
   Patch,
-  Post,
   Query,
 } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
+// import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserDto } from './dtos/user.dto';
 import { Serialize } from 'src/core/interceptors/serialize.interceptor';
 
-@Controller('auth')
+@Controller('user')
 @Serialize(UserDto) // can use on top of the controller as all API returns User data only
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
-  @Post('/signup')
-  createUser(@Body() body: CreateUserDto) {
-    return this.userService.create(body);
-  }
+  // @Post('/signup')
+  // createUser(@Body() body: CreateUserDto) {
+  //   return this.userService.create(body);
+  // }
 
   // @UseInterceptors(new SerializeInterceptor(UserDto))
   @Get('/:id')

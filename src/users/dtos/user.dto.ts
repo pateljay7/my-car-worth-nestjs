@@ -12,4 +12,10 @@ export class UserDto {
 
   @Expose()
   last_name: string;
+
+  @Expose()
+  updated_at: Date;
+
+  @Expose()
+  created_at: Date;
 }
