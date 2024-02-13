@@ -20,8 +20,8 @@ import { CurrentUser } from 'src/core/decorators/user.decortor';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
   @Get('/me')
-  async me(@CurrentUser() user: { id: number }) {
-    return this.userService.findOne(user.id);
+  async me(@CurrentUser() user: { userId: number }) {
+    return this.userService.findOne(user.userId);
   }
 
   @Get('/:id')
