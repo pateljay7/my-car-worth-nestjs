@@ -6,9 +6,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Report } from './report.entity';
 
 @Entity({})
 export class User {
@@ -29,6 +31,9 @@ export class User {
   // @Exclude()
   @Column()
   password: string;
+
+  @OneToMany(() => Report, (report) => report.user)
+  reports: Report[];
 
   @CreateDateColumn({
     type: 'timestamp',
