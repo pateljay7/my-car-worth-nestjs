@@ -28,7 +28,7 @@ export class ReportsService {
 
   async find() {
     try {
-      return this.reportRepo.find();
+      return this.reportRepo.find({ relations: ['user'] });
     } catch (error) {
       throw new Error(error);
     }
