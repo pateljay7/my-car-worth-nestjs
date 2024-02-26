@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from 'src/database/entities/report.entity';
 import { Repository } from 'typeorm';
 import { CreateReportDto } from './dtos/create-report.dto';
+import { User } from 'src/database/entities/user.entity';
 
 @Injectable()
 export class ReportsService {
-  constructor(@InjectRepository(Report) private repo: Repository<Report>) {}
+  constructor(
+    @InjectRepository(Report) private reportRepo: Repository<Report>,
+    @InjectRepository(User) private userRepo: Repository<User>,
+  ) {}
 
-  create(body: CreateReportDto) {
+  async create(body: CreateReportDto, userId: number) {
     try {
-      const report = this.repo.create(body);
-      return this.repo.save(report);
+      const report = this.reportRepo.create(body);
+      const user = await this.userRepo.findOneBy({ id: userId });
+      if (!user) {
+        throw new HttpException('userNotFound', HttpStatus.NOT_FOUND);
+      }
+      report.user = user;
+      return this.reportRepo.save(report);
     } catch (error) {
       throw new Error(error);
     }
@@ -19,7 +28,7 @@ export class ReportsService {
 
   async find() {
     try {
-      return this.repo.find();
+      return this.reportRepo.find();
     } catch (error) {
       throw new Error(error);
     }
