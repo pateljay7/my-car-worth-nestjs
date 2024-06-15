@@ -22,4 +22,9 @@ export class AuthController {
     session.accessToken = authUser.accessToken;
     return authUser;
   }
+
+  @Post('/signout')
+  signout(@Session() session: any) {
+    session.user = null;
+  }
 }
