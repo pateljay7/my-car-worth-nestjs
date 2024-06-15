@@ -8,6 +8,7 @@ import {
   Patch,
   Query,
   Session,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -15,18 +16,19 @@ import { UserDto } from './dtos/user.dto';
 import { Serialize } from 'src/core/interceptors/serialize.interceptor';
 import { CurrentUser } from 'src/core/decorators/user.decortor';
 import { Public } from 'src/core/decorators/public.decorator';
+import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { User } from 'src/database/entities/user.entity';
 
 @Controller('user')
 @Serialize(UserDto) // can use on top of the controller as all API returns User data only
+@UseInterceptors(CurrentUserInterceptor) // applied on controller scope
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   //using jwt token
   @Get('/me')
-  async me(@CurrentUser() user: { userId: number }) {
-    const currentUser = await this.userService.findOne(user.userId);
-    if (!currentUser) throw new NotFoundException('user not found');
-    return currentUser;
+  async me(@CurrentUser() user: User) {
+    return user;
   }
 
   //using session
