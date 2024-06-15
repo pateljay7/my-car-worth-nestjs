@@ -35,7 +35,7 @@ export class UsersController {
   @Public()
   @Get('/whoami')
   async whoami(@Session() session: any) {
-    const currentUser = await this.userService.findOne(session.user?.id);
+    const currentUser = await this.userService.findOne(session?.user?.id);
     if (!currentUser) throw new NotFoundException('user not found');
     return currentUser;
   }
