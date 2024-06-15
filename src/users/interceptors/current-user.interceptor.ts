@@ -14,7 +14,10 @@ export class CurrentUserInterceptor implements NestInterceptor {
 
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
     const request = context.switchToHttp().getRequest();
-    const { userId } = request.user;
+    if (!request.user)
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+
+    const { userId } = request?.user;
 
     if (!userId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
