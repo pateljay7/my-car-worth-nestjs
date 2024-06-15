@@ -16,20 +16,16 @@ export class AuthService {
   ) {}
 
   async signup(data: CreateUserDto) {
-    try {
-      const matchedUser = await this.userService.find(data.email);
-      if (matchedUser.length)
-        throw new BadRequestException('Email is already registered.');
-      const salt = bcrypt.genSaltSync();
-      const encryptedPassword = bcrypt.hashSync(data.password, salt);
-      const user = await this.userService.create({
-        ...data,
-        password: encryptedPassword,
-      });
-      return user;
-    } catch (error) {
-      throw new Error(error);
-    }
+    const matchedUser = await this.userService.find(data.email);
+    if (matchedUser.length)
+      throw new BadRequestException('Email is already registered.');
+    const salt = bcrypt.genSaltSync();
+    const encryptedPassword = bcrypt.hashSync(data.password, salt);
+    const user = await this.userService.create({
+      ...data,
+      password: encryptedPassword,
+    });
+    return user;
   }
 
   async login(data: UserLoginDto) {
