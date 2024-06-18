@@ -14,21 +14,23 @@ export class CurrentUserInterceptor implements NestInterceptor {
 
   async intercept(context: ExecutionContext, next: CallHandler<any>) {
     const request = context.switchToHttp().getRequest();
+
     if (!request.user)
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 
-    const { userId } = request?.user;
+    const { id } = request?.user;
 
-    if (!userId) {
+    if (!id) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
     try {
-      const user = await this.userService.findOne(userId);
+      const user = await this.userService.findOne(id);
       if (!user) {
         throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
       }
-      request.currentUser = user;
+      request.user = user;
+      console.log('Current User Interceptor ::', request.user);
     } catch (error) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
