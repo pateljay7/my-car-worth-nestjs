@@ -4,14 +4,16 @@ import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { JwtAuthGuard } from './core/guards/auth.guard';
+import { ConfigService } from '@nestjs/config';
 const cookieSession = require('cookie-session');
 config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = new ConfigService();
   app.use(
     cookieSession({
-      keys: ['skjnkakfnjabsnkfbksnvkj'],
+      keys: [configService.get('COOKIE_KEY')],
     }),
   );
   const moduleRef = app.select(AppModule);
@@ -22,7 +24,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  await app.listen(process.env.PORT, () => {
+  await app.listen(configService.get('PORT'), () => {
     console.log(`[ Server is runnig on port ${process.env.PORT}]`);
   });
 }

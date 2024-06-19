@@ -8,9 +8,20 @@ import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './core/middlewares/logger.middleware';
 import { ReportsController } from './reports/reports.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UsersModule, ReportsModule, DatabaseModule, CoreModule, AuthModule],
+  imports: [
+    UsersModule,
+    ReportsModule,
+    DatabaseModule,
+    CoreModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      envFilePath: `.env.${process.env.NODE_ENV}`,
+      isGlobal: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
