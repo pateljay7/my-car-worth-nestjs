@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 import { JwtStrategy } from '../jwt.strategy';
 import * as bcrypt from 'bcrypt';
 import { UserLoginDto } from '../dtos/user-login.dto';
