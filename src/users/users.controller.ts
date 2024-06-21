@@ -5,6 +5,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Query,
   Session,
@@ -13,11 +14,11 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserDto } from './dtos/user.dto';
-import { Serialize } from 'src/core/interceptors/serialize.interceptor';
-import { CurrentUser } from 'src/core/decorators/user.decortor';
-import { Public } from 'src/core/decorators/public.decorator';
+import { Serialize } from '../core/interceptors/serialize.interceptor';
+import { CurrentUser } from '../core/decorators/user.decortor';
+import { Public } from '../core/decorators/public.decorator';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
-import { User } from 'src/database/entities/user.entity';
+import { User } from '../database/entities/user.entity';
 
 @Controller('user')
 @Serialize(UserDto) // can use on top of the controller as all API returns User data only
@@ -41,26 +42,27 @@ export class UsersController {
   }
 
   @Get('/:id')
-  async findUser(@Param('id') id: string) {
-    const user = await this.userService.findOne(+id);
+  async findUser(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.userService.findOne(id);
     if (!user) throw new NotFoundException('user not found');
     return user;
   }
 
   @Get()
-  findAllUsers(@Query('email') email: string, @Session() session: any) {
-    console.log('session', session);
-
+  findAllUsers(@Query('email') email: string) {
     return this.userService.find(email);
   }
 
   @Delete('/:id')
-  removeUser(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  removeUser(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.remove(id);
   }
 
   @Patch('/:id')
-  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-    return this.userService.update(+id, body);
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateUserDto,
+  ) {
+    return this.userService.update(id, body);
   }
 }
