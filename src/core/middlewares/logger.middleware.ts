@@ -3,6 +3,10 @@ import { NextFunction, Request, Response } from 'express';
 
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
+    console.log(
+      `\n==========================[ ${new Date()} ]===========================\n`,
+    );
+
     console.log('REQUEST URL::', req.method, req.baseUrl);
     req.query && console.log('REQUEST QUERY::', req.query);
     req.body && console.log('REQUEST BODY::', req.body);
