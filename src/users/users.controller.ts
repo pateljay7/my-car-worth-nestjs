@@ -13,11 +13,11 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserDto } from './dtos/user.dto';
-import { Serialize } from 'src/core/interceptors/serialize.interceptor';
-import { CurrentUser } from 'src/core/decorators/user.decortor';
-import { Public } from 'src/core/decorators/public.decorator';
+import { Serialize } from '../core/interceptors/serialize.interceptor';
+import { CurrentUser } from '../core/decorators/user.decortor';
+import { Public } from '../core/decorators/public.decorator';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
-import { User } from 'src/database/entities/user.entity';
+import { User } from '../database/entities/user.entity';
 
 @Controller('user')
 @Serialize(UserDto) // can use on top of the controller as all API returns User data only
@@ -48,9 +48,7 @@ export class UsersController {
   }
 
   @Get()
-  findAllUsers(@Query('email') email: string, @Session() session: any) {
-    console.log('session', session);
-
+  findAllUsers(@Query('email') email: string) {
     return this.userService.find(email);
   }
 
