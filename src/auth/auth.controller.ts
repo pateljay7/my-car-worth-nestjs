@@ -3,15 +3,25 @@ import { AuthService } from './services/auth.service';
 import { UserLoginDto } from './dtos/user-login.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { Public } from '../core/decorators/public.decorator';
+import { EmailService } from 'src/email/services/email/email.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private emailService: EmailService,
+  ) {}
 
   @Public()
   @Post('/signup')
-  signup(@Body() data: CreateUserDto) {
-    return this.authService.signup(data);
+  async signup(@Body() data: CreateUserDto) {
+    const user = await this.authService.signup(data);
+    this.emailService.sendEmail(
+      data.email,
+      'Welcome to onboard',
+      `Welcome to our system ${user.email}`,
+    );
+    return user;
   }
 
   @Public()

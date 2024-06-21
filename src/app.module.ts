@@ -7,7 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './core/middlewares/logger.middleware';
-import { ReportsController } from './reports/reports.controller';
+import { EmailModule } from './email/email.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -17,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
     DatabaseModule,
     CoreModule,
     AuthModule,
+    EmailModule,
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true,
