@@ -8,7 +8,9 @@ import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './core/middlewares/logger.middleware';
 import { EmailModule } from './email/email.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ChatModule } from './chat/chat.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -18,6 +20,17 @@ import { ConfigModule } from '@nestjs/config';
     CoreModule,
     AuthModule,
     EmailModule,
+    ChatModule,
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get('REDIS_PORT'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true,
