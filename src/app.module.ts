@@ -11,6 +11,8 @@ import { EmailModule } from './email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ChatModule } from './chat/chat.module';
 import { BullModule } from '@nestjs/bull';
+import { FriendsModule } from './friends/friends.module';
+import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { BullModule } from '@nestjs/bull';
       envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true,
     }),
+    FriendsModule,
+    FriendRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
