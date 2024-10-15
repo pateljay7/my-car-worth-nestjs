@@ -11,6 +11,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Report } from './report.entity';
+import { Friend } from './friend.entity';
+import { FriendRequest } from './friend-request.entity';
 
 @Entity({})
 export class User {
@@ -37,6 +39,15 @@ export class User {
 
   @OneToMany(() => Report, (report) => report.user)
   reports: Report[];
+
+  @OneToMany(() => Friend, (friend) => friend.user)
+  friends: Friend[];
+
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender)
+  sentRequests: FriendRequest[];
+
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver)
+  receivedRequests: FriendRequest[];
 
   @CreateDateColumn({
     type: 'timestamp',
