@@ -13,6 +13,7 @@ import { ChatModule } from './chat/chat.module';
 import { BullModule } from '@nestjs/bull';
 import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { FriendRequestsModule } from './friend-requests/friend-requests.module';
     }),
     FriendsModule,
     FriendRequestsModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

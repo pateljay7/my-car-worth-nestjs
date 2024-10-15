@@ -1,34 +1,58 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Param,
+  Req,
+  Get,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FriendRequestsService } from './friend-requests.service';
-import { CreateFriendRequestDto } from './dto/create-friend-request.dto';
-import { UpdateFriendRequestDto } from './dto/update-friend-request.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { CurrentUserInterceptor } from 'src/users/interceptors/current-user.interceptor';
+import { CurrentUser } from 'src/core/decorators/user.decortor';
 
 @Controller('friend-requests')
+@UseInterceptors(CurrentUserInterceptor)
 export class FriendRequestsController {
   constructor(private readonly friendRequestsService: FriendRequestsService) {}
 
-  @Post()
-  create(@Body() createFriendRequestDto: CreateFriendRequestDto) {
-    return this.friendRequestsService.create(createFriendRequestDto);
+  @Post('send/:receiverId')
+  async sendFriendRequest(@Req() req, @Param('receiverId') receiverId: number) {
+    return await this.friendRequestsService.sendFriendRequest(
+      req.user.id,
+      receiverId,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.friendRequestsService.findAll();
+  @Post('accept/:requestId')
+  async acceptFriendRequest(@Req() req, @Param('requestId') requestId: number) {
+    return await this.friendRequestsService.acceptFriendRequest(
+      requestId,
+      req.user.id,
+    );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendRequestsService.findOne(+id);
+  @Post('decline/:requestId')
+  async declineFriendRequest(
+    @Req() req,
+    @Param('requestId') requestId: number,
+  ) {
+    return await this.friendRequestsService.declineFriendRequest(
+      requestId,
+      req.user.id,
+    );
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFriendRequestDto: UpdateFriendRequestDto) {
-    return this.friendRequestsService.update(+id, updateFriendRequestDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.friendRequestsService.remove(+id);
+  @Get('pending/')
+  async getPendingRequests(
+    @CurrentUser() user: { id: number },
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.friendRequestsService.getPendingRequests(
+      user.id,
+      paginationDto.page,
+      paginationDto.limit,
+    );
   }
 }
