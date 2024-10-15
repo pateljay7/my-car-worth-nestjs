@@ -1,34 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
 import { FriendsService } from './friends.service';
-import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-friend.dto';
+import { CurrentUser } from 'src/core/decorators/user.decortor';
 
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Post()
-  create(@Body() createFriendDto: CreateFriendDto) {
-    return this.friendsService.create(createFriendDto);
-  }
-
   @Get()
-  findAll() {
-    return this.friendsService.findAll();
+  async getFriends(
+    @CurrentUser() user: { id: number },
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return await this.friendsService.getFriends(user.id, +page, +limit);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFriendDto: UpdateFriendDto) {
-    return this.friendsService.update(+id, updateFriendDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.friendsService.remove(+id);
+  @Delete(':friendId')
+  async removeFriend(
+    @CurrentUser() user: { id: number },
+    @Param('friendId') friendId: number,
+  ) {
+    return await this.friendsService.removeFriend(user.id, friendId);
   }
 }
