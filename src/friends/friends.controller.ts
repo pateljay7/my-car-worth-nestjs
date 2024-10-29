@@ -11,8 +11,14 @@ export class FriendsController {
     @CurrentUser() user: { id: number },
     @Query('page') page = 1,
     @Query('limit') limit = 10,
+    @Query('searchTerm') searchTerm = '',
   ) {
-    return await this.friendsService.getFriends(user.id, +page, +limit);
+    return await this.friendsService.getFriends(
+      user.id,
+      +page,
+      +limit,
+      searchTerm,
+    );
   }
 
   @Delete(':friendId')

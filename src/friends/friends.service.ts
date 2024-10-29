@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Friend } from 'src/database/entities/friend.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 @Injectable()
 export class FriendsService {
@@ -10,9 +10,21 @@ export class FriendsService {
     private friendRepository: Repository<Friend>,
   ) {}
 
-  async getFriends(userId: number, page: number, limit: number) {
+  async getFriends(
+    userId: number,
+    page: number,
+    limit: number,
+    searchTerm: string,
+  ) {
     const [friends, totalCount] = await this.friendRepository.findAndCount({
-      where: { user: { id: userId } },
+      where: {
+        user: { id: userId },
+        friend: [
+          { first_name: ILike(`%${searchTerm}%`) },
+          { last_name: ILike(`%${searchTerm}%`) },
+          { email: ILike(`%${searchTerm}%`) },
+        ],
+      },
       relations: ['friend'],
       skip: (page - 1) * limit,
       take: limit,
