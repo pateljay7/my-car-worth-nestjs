@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Notification } from './entities/notification.entity';
 import { Repository } from 'typeorm';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { User } from 'src/database/entities/user.entity';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { Notification } from 'src/database/entities/notification.entity';
 
 @Injectable()
 export class NotificationService {
@@ -52,10 +52,24 @@ export class NotificationService {
         take: limit,
       });
 
+    const transformedNotifications = notifications.map((notification) => ({
+      id: notification.id,
+      data: notification.data,
+      createdAt: notification.createdAt,
+      sender: {
+        id: notification.sender.id,
+        name: `${notification.sender.first_name} ${notification.sender.last_name}`,
+      },
+      user: {
+        id: notification.user.id,
+        email: notification.user.email,
+      },
+    }));
+
     const totalPages = Math.ceil(totalCount / limit);
 
     return {
-      notifications,
+      transformedNotifications,
       totalCount,
       totalPages,
       currentPage: page,
@@ -72,6 +86,34 @@ export class NotificationService {
 
     if (!notification) {
       throw new Error('Notification not found');
+    }
+
+    Object.assign(notification, updateNotificationDto);
+    return await this.notificationRepository.save(notification);
+  }
+
+  async getNotificationByFriendRequestId(friendRequestId: number) {
+    const notification = await this.notificationRepository
+      .createQueryBuilder('notification')
+      .where("notification.data->>'friendRequestId' = :friendRequestId", {
+        friendRequestId,
+      })
+      .orderBy('notification.createdAt', 'DESC') // Optional: to get the latest notification first
+      .getOne(); // Fetches only one notification
+
+    return notification;
+  }
+
+  async update(
+    id: number,
+    updateNotificationDto: UpdateNotificationDto,
+  ): Promise<Notification> {
+    const notification = await this.notificationRepository.findOne({
+      where: { id },
+    });
+
+    if (!notification) {
+      throw new NotFoundException(`Notification with id ${id} not found.`);
     }
 
     Object.assign(notification, updateNotificationDto);

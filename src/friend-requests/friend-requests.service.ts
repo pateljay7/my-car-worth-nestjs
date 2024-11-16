@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Friend } from 'src/database/entities/friend.entity';
 import { User } from 'src/database/entities/user.entity';
 import { FRIEND_REQUEST_STATUS } from './constants';
+import { NotificationService } from 'src/notification/notification.service';
+import { NOTIFICATION_TYPE } from 'src/notification/notification.contant';
 
 @Injectable()
 export class FriendRequestsService {
@@ -15,6 +17,7 @@ export class FriendRequestsService {
     private friendRepository: Repository<Friend>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private notificationService: NotificationService,
   ) {}
 
   // Send a friend request
@@ -82,6 +85,19 @@ export class FriendRequestsService {
 
     await this.friendRequestRepository.save(friendRequest);
 
+    this.notificationService.create({
+      senderId: senderId,
+      type: NOTIFICATION_TYPE.FRIEND_REQUEST_PENDING,
+      userId: receiverId,
+      isRead: false,
+      data: {
+        message: `${sender.first_name} ${sender.last_name} would like to add you to his friend`,
+        title: `A new friend request`,
+        actionRequired: true,
+        friendRequestId: friendRequest.id,
+      },
+    });
+
     return { message: 'Friend request sent successfully' };
   }
 
@@ -119,6 +135,20 @@ export class FriendRequestsService {
     friendRequest.status = FRIEND_REQUEST_STATUS.ACCEPTED;
     await this.friendRequestRepository.save(friendRequest);
 
+    const notification =
+      await this.notificationService.getNotificationByFriendRequestId(
+        friendRequest.id,
+      );
+
+    await this.notificationService.update(notification.id, {
+      type: NOTIFICATION_TYPE.FRIEND_REQUEST_ACCEPTED,
+      data: {
+        ...notification.data,
+        message: `${friendRequest.sender.first_name} ${friendRequest.sender.last_name} is your friend now`,
+        title: `A friend request accepted`,
+        actionRequired: false,
+      },
+    });
     return { message: 'Friend request accepted' };
   }
 

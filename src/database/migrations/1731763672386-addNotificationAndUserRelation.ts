@@ -5,15 +5,15 @@ export class Migrations1731763672386 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create ENUM type for notification type
-    await queryRunner.query(
-      `CREATE TYPE "public"."notification_type_enum" AS ENUM('friend-request', 'post-like', 'comment', 'generic')`,
-    );
+    // await queryRunner.query(
+    //   `CREATE TYPE "public"."notification_type_enum" AS ENUM('friend-request', 'post-like', 'comment', 'generic')`,
+    // );
 
     // Create notification table
     await queryRunner.query(
       `CREATE TABLE "notification" (
         "id" SERIAL NOT NULL,
-        "type" "public"."notification_type_enum" NOT NULL DEFAULT 'generic',
+        "type" varchar,
         "data" json,
         "isRead" boolean NOT NULL DEFAULT false,
         "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
@@ -50,8 +50,5 @@ export class Migrations1731763672386 implements MigrationInterface {
 
     // Drop notification table
     await queryRunner.query(`DROP TABLE "notification"`);
-
-    // Drop ENUM type for notification type
-    await queryRunner.query(`DROP TYPE "public"."notification_type_enum"`);
   }
 }

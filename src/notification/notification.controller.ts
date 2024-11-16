@@ -10,6 +10,7 @@ import {
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { CurrentUser } from 'src/core/decorators/user.decortor';
 
 @Controller('notifications')
 export class NotificationController {
@@ -22,14 +23,14 @@ export class NotificationController {
     return await this.notificationsService.create(createNotificationDto);
   }
 
-  @Get(':userId')
+  @Get('')
   async getNotifications(
-    @Param('userId') userId: number,
+    @CurrentUser() user: { id: number },
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
     return await this.notificationsService.getNotifications(
-      userId,
+      user.id,
       +page,
       +limit,
     );
