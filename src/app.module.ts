@@ -14,6 +14,7 @@ import { BullModule } from '@nestjs/bull';
 import { FriendsModule } from './friends/friends.module';
 import { FriendRequestsModule } from './friend-requests/friend-requests.module';
 import { CommonModule } from './common/common.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CommonModule } from './common/common.module';
     FriendsModule,
     FriendRequestsModule,
     CommonModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

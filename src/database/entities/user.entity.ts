@@ -13,6 +13,7 @@ import {
 import { Report } from './report.entity';
 import { Friend } from './friend.entity';
 import { FriendRequest } from './friend-request.entity';
+import { Notification } from './notification.entity';
 
 @Entity({})
 export class User {
@@ -48,6 +49,9 @@ export class User {
 
   @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver)
   receivedRequests: FriendRequest[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 
   @CreateDateColumn({
     type: 'timestamp',
