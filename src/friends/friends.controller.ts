@@ -28,4 +28,13 @@ export class FriendsController {
   ) {
     return await this.friendsService.removeFriend(user.id, friendId);
   }
+
+  @Get('suggestions')
+  async suggestFriends(
+    @CurrentUser() user: { id: number },
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.friendsService.suggestFriends(user.id, page, limit);
+  }
 }

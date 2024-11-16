@@ -62,4 +62,36 @@ export class FriendsService {
     await this.friendRepository.remove(friendship);
     return { message: 'Friend removed successfully' };
   }
+
+  async suggestFriends(userId: number, page: number, limit: number) {
+    const userFriends = await this.friendRepository.find({
+      where: { user: { id: userId } },
+      relations: ['friend'],
+    });
+
+    const userFriendIds = userFriends.map((friend) => friend.friend.id);
+
+    // Get users who are friends of the user's friends
+    const mutualFriends = await this.friendRepository
+      .createQueryBuilder('friend')
+      .leftJoinAndSelect('friend.friend', 'friendOfFriend')
+      .leftJoin('friend.user', 'friendUser')
+      .where('friendUser.id IN (:...userFriendIds)', { userFriendIds })
+      .andWhere('friendOfFriend.id != :userId', { userId })
+      .andWhere('friendOfFriend.id NOT IN (:...excludedIds)', {
+        excludedIds: [...userFriendIds, userId],
+      })
+      .limit(limit)
+      .offset((page - 1) * limit)
+      .getMany();
+
+    // Remove duplicates and map to User objects
+    const suggestedUsers = mutualFriends.map((mf) => mf.friend);
+
+    return {
+      suggestedUsers,
+      totalCount: mutualFriends.length,
+      currentPage: page,
+    };
+  }
 }
